@@ -6,8 +6,15 @@ fn main() {
 
 fn app(cx: Scope) -> Element {
     render! {
+        h1 { "Title" }
+
         div {
             "Hello, world!"
+            div {
+                "inner"
+            }
         }
+
+        br {}    
     }
 }
