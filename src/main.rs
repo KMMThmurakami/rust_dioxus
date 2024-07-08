@@ -3,6 +3,7 @@
 use dioxus::prelude::*;
 use tracing::Level;
 
+
 #[derive(Clone, Routable, Debug, PartialEq)]
 enum Route {
     #[route("/")]
@@ -42,10 +43,16 @@ fn Home() -> Element {
             },
             "Go to blog"
         }
+        link { rel: "stylesheet", href: "main.css" }
         div {
             h1 { "High-Five counter: {count}" }
-            button { onclick: move |_| count += 1, "Up high!" }
-            button { onclick: move |_| count -= 1, "Down low!" }
+            div {
+                class: "setButton",
+                button { onclick: move |_| count += 1, "Up high!" }
+                button { onclick: move |_| count -= 1, "Down low!" }
+                button { onclick: move |_| count *= 2, "Double!" }
+                button { onclick: move |_| count.set(0), "Reset!" }
+            }
         }
     }
 }
