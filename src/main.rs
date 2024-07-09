@@ -46,6 +46,10 @@ fn Home() -> Element {
         link { rel: "stylesheet", href: "main.css" }
         div {
             h1 { "High-Five counter: {count}" }
+            div { "i32_max = {std::i32::MAX}" }
+            div { "u32_max = {std::u32::MAX}" }
+            div { "i128_max = {std::i128::MAX}" }
+            div { "u128_max = {std::u128::MAX}" }
             div {
                 class: "setButton",
                 button { onclick: move |_| count += 1, "Up high!" }
