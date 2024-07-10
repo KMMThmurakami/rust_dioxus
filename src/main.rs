@@ -2,7 +2,13 @@
 
 use dioxus::prelude::*;
 use tracing::Level;
+use wasm_bindgen::prelude::*;
 
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
 
 #[derive(Clone, Routable, Debug, PartialEq)]
 enum Route {
@@ -16,6 +22,7 @@ fn main() {
     // Init logger
     dioxus_logger::init(Level::INFO).expect("failed to init logger");
     launch(App);
+    log("Hello from Rust!");
 }
 
 fn App() -> Element {
@@ -34,7 +41,7 @@ fn Blog(id: i32) -> Element {
 
 #[component]
 fn Home() -> Element {
-    let mut count = use_signal(|| 0);
+    let mut count: Signal<i32> = use_signal(|| 0);
 
     rsx! {
         Link {
@@ -52,9 +59,33 @@ fn Home() -> Element {
             div { "u128_max = {std::u128::MAX}" }
             div {
                 class: "setButton",
-                button { onclick: move |_| count += 1, "Up high!" }
-                button { onclick: move |_| count -= 1, "Down low!" }
-                button { onclick: move |_| count *= 2, "Double!" }
+                button { onclick: move |_| {
+                    match count().checked_add(1) {
+                        Some(new_count) => {
+                            count.set(new_count);
+                            log(&format!("Count increased to {}", new_count));
+                        },
+                        None => log("Error: Overflow detected when incrementing the count"),
+                    }
+                }, "Up high!" }
+                button { onclick: move |_| {
+                    match count().checked_sub(1) {
+                        Some(new_count) => {
+                            count.set(new_count);
+                            log(&format!("Count decreased to {}", new_count));
+                        },
+                        None => log("Error: Overflow detected when decrementing the count"),
+                    }
+                }, "Down low!" }
+                button { onclick: move |_| {
+                    match count().checked_mul(2) {
+                        Some(new_count) => {
+                            count.set(new_count);
+                            log(&format!("Count doubled to {}", new_count));
+                        },
+                        None => log("Error: Overflow detected when doubling the count"),
+                    }
+                }, "Double!" }
                 button { onclick: move |_| count.set(0), "Reset!" }
             }
         }
