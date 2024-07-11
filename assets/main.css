@@ -12,16 +12,30 @@ body {
     color: #ffffff;
 }
 
-#main button {
+.integerText {
+    margin: 10px;
+}
+
+.statusArea {
+    text-align: center;
+    height: 24px;
+    color: #ff0000;
+    font-weight: 700;
+}
+
+button {
     -webkit-user-select: none !important;
     -moz-user-select: none !important;
     -ms-user-select: none !important;
     user-select: none !important;
+    margin: 4px;
+    width: 64px;
 }
 
-#main .setButton {
+.setButton {
     display: flex;
     justify-content: center;
+    margin: 8px;
 }
 
 #links {

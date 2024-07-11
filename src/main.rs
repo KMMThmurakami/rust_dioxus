@@ -23,6 +23,9 @@ enum CalcFlag {
     Add,
     Sub,
     Multiple,
+    Max,
+    Min,
+    Reset
 }
 
 fn main() {
@@ -46,9 +49,13 @@ fn Blog(id: i32) -> Element {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct CalcStatus( bool );
+
 #[component]
 fn Home() -> Element {
     let mut count: Signal<i32> = use_signal(|| 0);
+    let mut state: Signal<CalcStatus> = use_signal(|| CalcStatus(true));
 
     let mut update_count = move |flg: CalcFlag| {
         let new_count: Option<i32>;
@@ -56,17 +63,25 @@ fn Home() -> Element {
             CalcFlag::Add => new_count = count().checked_add(1),
             CalcFlag::Sub => new_count = count().checked_sub(1),
             CalcFlag::Multiple => new_count = count().checked_mul(2),
+            CalcFlag::Max => new_count = Some(std::i32::MAX),
+            CalcFlag::Min => new_count = Some(std::i32::MIN),
+            CalcFlag::Reset => new_count = Some(0),
         }
         match new_count {
             Some(new_value) => {
                 count.set(new_value);
+                state.set(CalcStatus(true));
                 log(&format!("Count changed to {}", new_value));
             },
-            None => log("Error: Overflow detected when changing the count"),
+            None => {
+                state.set(CalcStatus(false));
+                log("Error: Overflow detected when changing the count");
+            },
         }
     };
 
-    let loop_max = 10000; 
+    let loop_max = 10000;
+
     rsx! {
         Link {
             to: Route::Blog {
@@ -77,10 +92,16 @@ fn Home() -> Element {
         link { rel: "stylesheet", href: "main.css" }
         div {
             h1 { "High-Five counter: {count}" }
-            div { "i32_max = {std::i32::MAX}" }
-            div { "u32_max = {std::u32::MAX}" }
-            div { "i128_max = {std::i128::MAX}" }
-            div { "u128_max = {std::u128::MAX}" }
+            div {
+                class: "statusArea",
+                if state() == CalcStatus(false) {
+                    div { "Overflow i32!!" }
+                }
+            }
+            div { class: "integerText", "i32"
+                div { "max = {std::i32::MAX}" }
+                div { "min = {std::i32::MIN}" }
+            }
             div {
                 class: "setButton",
                 button { onclick: move |_| update_count(CalcFlag::Add), "+1" }
@@ -93,7 +114,9 @@ fn Home() -> Element {
                         i += 1;
                     }
                 }, "loop {loop_max}" }
-                button { onclick: move |_| count.set(0), "Reset!" }
+                button { onclick: move |_| update_count(CalcFlag::Max), "MAX!" }
+                button { onclick: move |_| update_count(CalcFlag::Min), "MIN!" }
+                button { onclick: move |_| update_count(CalcFlag::Reset), "Reset!" }
             }
         }
     }
