@@ -80,8 +80,6 @@ fn Home() -> Element {
         }
     };
 
-    let loop_max = 10000;
-
     rsx! {
         Link {
             to: Route::Blog {
@@ -107,15 +105,8 @@ fn Home() -> Element {
                 button { onclick: move |_| update_count(CalcFlag::Add), "+1" }
                 button { onclick: move |_| update_count(CalcFlag::Sub), "-1" }
                 button { onclick: move |_| update_count(CalcFlag::Multiple), "×2" }
-                button { onclick: move |_| {
-                    let mut i = 0;
-                    while i < loop_max {
-                        update_count(CalcFlag::Add);
-                        i += 1;
-                    }
-                }, "loop {loop_max}" }
-                button { onclick: move |_| update_count(CalcFlag::Max), "MAX!" }
-                button { onclick: move |_| update_count(CalcFlag::Min), "MIN!" }
+                button { onclick: move |_| update_count(CalcFlag::Max), "i32 MAX!" }
+                button { onclick: move |_| update_count(CalcFlag::Min), "i32 MIN!" }
                 button { onclick: move |_| update_count(CalcFlag::Reset), "Reset!" }
             }
         }
